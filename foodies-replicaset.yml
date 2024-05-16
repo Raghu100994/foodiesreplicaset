@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: foodiesreplicaset
+  labels:
+    appName: foodies
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: foodies
+      version: "1.0"
+template:
+  metadata:
+    labels:
+      name: foodies
+      version: "1.0"
+  spec:
+    containers:
+      - name: foodies
+        image: raghravi94/foodiesreplicaset:1.0
+        ports:
+          - name: tomcatport
+            containerPort: 8080
+            protocol: TCP
+  resources:
+    requests:
+      cpu: "1"
+      memory: "500Mi"
+    limits:
+      cpu: "1"
+      memory: "500Mi"
+      readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 3
+      livenessProbe: 
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 3
+
